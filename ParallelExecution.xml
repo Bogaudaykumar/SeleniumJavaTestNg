@@ -1,0 +1,8 @@
+<suite name="Parallel Tests" parallel="methods" thread-count="2">
+    <test name="Test Suite 1">
+        <classes>
+            <class name="testcases.AddToCart"/>
+            <class name="testcases.Login"/>
+        </classes>
+    </test>
+</suite>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<!--<suite thread-count="2" parallel="tests" name="All tests">
+    <listeners>
+        <listener class-name="listeners.Listeners"/>
+    </listeners>
+    <test name="chrometest">
+        <parameter name="browser" value="chrome"></parameter>
+        <classes>
+            <class name="testcases.AddToCart"/>
+        </classes>
+    </test>
+    <test name="edgetest">
+        <parameter name="browser" value="edge"></parameter>
+        <classes>
+            <class name="testcases.AddToCart"/>
+        </classes>
+    </test>
+</suite>-->
+<!--cross browsing testing-->
+<!--
+<suite thread-count="2" name="All tests">
+    <listeners>
+        <listener class-name="listeners.Listeners"/>
+    </listeners>
+
+    <test name="chrometest">
+        <parameter name="browser" value="chrome"></parameter>
+        <classes>
+            <class name="testcases.AddToCart"/>
+        </classes>
+    </test>
+    <test name="edgetest">
+        <parameter name="browser" value="edge"></parameter>
+        <classes>
+            <class name="testcases.Login"/>
+        </classes>
+    </test>
+</suite>
+-->
+<!--
+<suite  name="All tests">
+    <listeners>
+        <listener class-name="listeners.Listeners"/>
+    </listeners>
+    <test name="chrometest" >
+        <parameter name="browser" value="chrome"></parameter>
+        <parameter name="url" value="https://www.saucedemo.com/"></parameter>
+        <classes>
+            <class name="testcases.AddToCart"/>
+        </classes>
+    </test>
+</suite>-->
+<suite  name="All tests">
+    <listeners>
+        <listener class-name="listeners.Listeners"/>
+    </listeners>
+    <test name="chrometest" >
+        <parameter name="browser" value="chrome"></parameter>
+        <parameter name="url" value="https://www.saucedemo.com/"></parameter>
+        <classes>
+            <class name="testcases.LoginInvalidTestcase"/>
+        </classes>
+    </test>
+</suite>
