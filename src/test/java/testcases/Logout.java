@@ -1,15 +1,14 @@
 package testcases;
 
 import DriverFactory.BaseTest;
+import Pages.LoginPage;
+import Pages.LogoutPage;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import Pages.LoginPage;
-import utilities.ExcelReader;
 
-
-public class Login extends BaseTest {
-    @Test(groups = {"sanity"}, description = "Verify and validate whether the user is able to login with valid credentials")
-    public void LoginTestcase1() {
+public class Logout extends BaseTest {
+    @Test(groups = {"sanity"}, description = "Verify and validate whether the user is able to login with invalid credentials")
+    public void LogoutTestcase() {
         try {
             LoginPage.initilize();
             LoginPage.enterUsername(getDriver(),properties.getProperty("username"));
@@ -17,6 +16,9 @@ public class Login extends BaseTest {
             LoginPage.login(getDriver());
             String verifyLoginAssertion = LoginPage.getConfirmationMessage(getDriver());
             Assert.assertEquals(verifyLoginAssertion, "Products", "Login confirmation message does not match.");
+            LogoutPage.initilize();
+            LogoutPage.clickMenu(getDriver());
+            LogoutPage.logout(getDriver());
         } catch (Exception e) {
             e.printStackTrace();
         }

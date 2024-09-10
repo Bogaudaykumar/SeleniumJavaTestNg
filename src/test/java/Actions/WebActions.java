@@ -1,28 +1,151 @@
 package Actions;
+
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 import java.util.*;
 
-public class WebActions  {
-    private static  WebDriver driver;
+public class WebActions {
+    static Actions action;
+    static HashMap<Integer, String> hm = new HashMap<>();
+    public static WebElement findElement(WebDriver driver, Map<String, String> values) {
+        String locatorValue = values.get("value");
+        String locatorType = values.get("locatorType");
+        switch (locatorType.toLowerCase()) {
+            case "xpath":
+                return driver.findElement(By.xpath(locatorValue));
+            case "id":
+                return driver.findElement(By.id(locatorValue));
+            case "name":
+                return driver.findElement(By.name(locatorValue));
+            case "classname":
+                return driver.findElement(By.className(locatorValue));
+            case "tagname":
+                return driver.findElement(By.tagName(locatorValue));
+            case "cssselector":
+                return driver.findElement(By.cssSelector(locatorValue));
+            default:
+                throw new IllegalArgumentException("Unsupported locator type: " + locatorType);
+        }
+    }
+
+    public static void moveToElement(WebDriver driver,WebElement element) {
+        action=new Actions(driver);
+        action.moveToElement(element).perform();
+    }
+
+    public static void selectByVisibleText(WebElement element, String text) {
+        Select select = new Select(element);
+        select.selectByVisibleText(text);
+    }
+    public static void selectByValue(WebElement element, String text) {
+        Select select = new Select(element);
+        select.selectByValue(text);
+    }
+    public static void clickElementByJS(WebDriver driver, WebElement element) {
+        JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+        jsExecutor.executeScript("arguments[0].click();", element);
+    }
+
+    public static void scrollIntoView(WebDriver driver, WebElement element) {
+        JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
+        jsExecutor.executeScript("arguments[0].scrollIntoView(true);", element);
+    }
+
+
+}
+
+
+
+
+
+/*package Actions;
+
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.*;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
+import java.util.*;
+
+public class WebActions {
+    private static WebDriver driver;
     private WebDriverWait wait;
     static Actions action;
     static HashMap<Integer, String> hm = new HashMap<>();
-    public WebActions (WebDriver driver) {
+
+    public WebActions(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
         action = new Actions(driver);
         wait = new WebDriverWait(driver, Duration.ofSeconds(5));
     }
+
+    //generic methods..................................................
+
+    public static WebElement findElement(WebDriver driver, Map<String, String> values) {
+        String locatorValue = values.get("value");
+        String locatorType = values.get("locatorType");
+
+        switch (locatorType.toLowerCase()) {
+            case "xpath":
+                return driver.findElement(By.xpath(locatorValue));
+            case "id":
+                return driver.findElement(By.id(locatorValue));
+            case "name":
+                return driver.findElement(By.name(locatorValue));
+            case "classname":
+                return driver.findElement(By.className(locatorValue));
+            case "tagname":
+                return driver.findElement(By.tagName(locatorValue));
+            case "cssselector":
+                return driver.findElement(By.cssSelector(locatorValue));
+            default:
+                throw new IllegalArgumentException("Unsupported locator type: " + locatorType);
+        }
+    }
+    public void sendTextWhenVisible(WebDriver driver, By locator, String text, int timeInSeconds) {
+        WebElement element = waitForElementToBeVisible(driver, locator, timeInSeconds);
+        element.sendKeys(text);
+    }
+
+    public String getTextFromElement(WebDriver driver, By locator) {
+        return driver.findElement(locator).getText();
+    }
+
+    public void sendTextToElement(WebDriver driver, By locator, String text) {
+        driver.findElement(locator).sendKeys(text);
+    }
+
+    public void clickElement(WebDriver driver, By locator) {
+        driver.findElement(locator).click();
+    }
+    public WebElement waitForElementToBeClickable(WebDriver driver, By locator, int timeInSeconds) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeInSeconds));
+        return wait.until(ExpectedConditions.elementToBeClickable(locator));
+    }
+    public WebElement waitForElementToBeVisible(WebDriver driver, By locator, int timeInSeconds) {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(timeInSeconds));
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+    }
+    public void setImplicitWait(WebDriver driver, int timeInSeconds) {
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(timeInSeconds));
+    }
+
+
     //mouse actions---------------------------------------------------------------------------
     public static void moveToElement(WebElement element) {
         action.moveToElement(element).perform();
     }
+
     public static void scrollToElement(WebElement element) {
         action.scrollToElement(element).perform();
     }
@@ -35,21 +158,22 @@ public class WebActions  {
         action.dragAndDrop(source, target).perform();
     }
 
-    public static void doubleClick( WebElement element) {
+    public static void doubleClick(WebElement element) {
         action.doubleClick(element).perform();
     }
 
-    public static void rightClick( WebElement element) {
+    public static void rightClick(WebElement element) {
         action.contextClick(element).perform();
     }
 
-    public static void clickAndHold( WebElement element) {
+    public static void clickAndHold(WebElement element) {
         action.clickAndHold(element).perform();
     }
 
-    public static void release( WebElement element) {
+    public static void release(WebElement element) {
         action.release(element).perform();
     }
+
     //dropdown handling using select class------------------------------------------------------
     public static void selectByVisibleText(WebElement element, String text) {
         Select select = new Select(element);
@@ -70,6 +194,7 @@ public class WebActions  {
         Select select = new Select(element);
         return select.getOptions();
     }
+
     //frames handling--------------------------------------------------------------------------
     public static void switchToFrame(WebElement frame) {
         driver.switchTo().frame(frame);
@@ -78,8 +203,9 @@ public class WebActions  {
     public static void switchToDefaultContent() {
         driver.switchTo().defaultContent();
     }
+
     //window handling---------------------------------------------------------------------------
-    public static void switchToNewWindow( String window) {
+    public static void switchToNewWindow(String window) {
         driver.switchTo().window(window);
     }
 
@@ -91,7 +217,7 @@ public class WebActions  {
         hm.put(window, s);
     }
 
-    public static void windowNavigation2( String s) {
+    public static void windowNavigation2(String s) {
         Set<String> set = driver.getWindowHandles();
         for (String st : set) {
             if (!st.equals(s)) {
@@ -101,7 +227,7 @@ public class WebActions  {
         }
     }
 
-    public static void windowNavigation( int window) {
+    public static void windowNavigation(int window) {
         Set<String> set = driver.getWindowHandles();
         for (String st : set) {
             if (st.equals(hm.get(window))) {
@@ -110,6 +236,7 @@ public class WebActions  {
             }
         }
     }
+
     //alerts handling----------------------------------------------------------------------------
     public static void acceptAlert() {
         Alert alert = driver.switchTo().alert();
@@ -126,10 +253,11 @@ public class WebActions  {
         return alert.getText();
     }
 
-    public static void sendKeysToAlert( String text) {
+    public static void sendKeysToAlert(String text) {
         Alert alert = driver.switchTo().alert();
         alert.sendKeys(text);
     }
+
     //keyboard actions------------------------------------------------------------------------------
     public static void selectAllText() {
         action.keyDown(Keys.CONTROL).sendKeys("a").keyUp(Keys.CONTROL).perform();
@@ -162,13 +290,14 @@ public class WebActions  {
     public static void pressEscape() {
         action.sendKeys(Keys.ESCAPE).perform();
     }
+
     //javascript methods
-    public static void clickElementByJS(WebDriver driver,WebElement element) {
+    public static void clickElementByJS(WebDriver driver, WebElement element) {
         JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
         jsExecutor.executeScript("arguments[0].click();", element);
     }
 
-    public static void scrollIntoView( WebDriver driver, WebElement element) {
+    public static void scrollIntoView(WebDriver driver, WebElement element) {
         JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
         jsExecutor.executeScript("arguments[0].scrollIntoView(true);", element);
     }
@@ -183,12 +312,12 @@ public class WebActions  {
         jsExecutor.executeScript("window.scrollTo(0, 0);");
     }
 
-    public static String getInnerTextByJS(WebDriver driver,WebElement element) {
+    public static String getInnerTextByJS(WebDriver driver, WebElement element) {
         JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
         return (String) jsExecutor.executeScript("return arguments[0].innerText;", element);
     }
 
-    public static void highlightElement(WebDriver driver,WebElement element, String style) {
+    public static void highlightElement(WebDriver driver, WebElement element, String style) {
         JavascriptExecutor jsExecutor = (JavascriptExecutor) driver;
         jsExecutor.executeScript("arguments[0].style.border='" + style + "';", element);
     }
@@ -210,3 +339,4 @@ public class WebActions  {
 
 
 }
+*/

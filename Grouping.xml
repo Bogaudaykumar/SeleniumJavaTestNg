@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 <suite name="All tests">
+    <groups>
+        <run>
+            <include name="sanity"/>
+            <include name="regression"/>
+        </run>
+    </groups>
     <listeners>
         <listener class-name="listeners.Listeners"/>
     </listeners>
@@ -9,12 +15,6 @@
         <parameter name="url" value="https://www.saucedemo.com/"></parameter>
         <classes>
             <class name="testcases.Login"/>
-        </classes>
-    </test>
-    <test name="chrometest1">
-        <parameter name="browser" value="edge"></parameter>
-        <parameter name="url" value="https://www.saucedemo.com/"></parameter>
-        <classes>
             <class name="testcases.AddToCart"/>
         </classes>
     </test>

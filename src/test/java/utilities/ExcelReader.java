@@ -1,67 +1,54 @@
 package utilities;
-
-import org.apache.poi.ss.usermodel.*;
-
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Map;
+import org.apache.poi.ss.usermodel.*;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.usermodel.*;
 public class ExcelReader {
 
-    public static List<Object[]> getExcelData(String filePath, String sheetName) {
-        List<Object[]> data = new ArrayList<>();
-        try (FileInputStream file = new FileInputStream(".\\src\\test\\java\\testcases\\ReadData.xlsx");
-             Workbook workbook = new XSSFWorkbook(file)) {
-            Sheet sheet = workbook.getSheet("login");
-            int rowCount = sheet.getPhysicalNumberOfRows();
-            for (int i = 1; i < rowCount; i++) {
-                Row row = sheet.getRow(i);
-                if (row != null) {
-                    List<Object> rowData = new ArrayList<>();
-                    for (Cell cell : row) {
-                        rowData.add(getCellValue(cell));
-                    }
-                    data.add(rowData.toArray());
+
+    public FileInputStream fi;
+    public FileOutputStream fo;
+    public XSSFWorkbook workbook;
+    public XSSFSheet sheet;
+    public XSSFRow row;
+    public XSSFCell cell;
+    public CellStyle style;
+    String path;
+
+    public ExcelReader(String path)
+    {
+        this.path=path;
+    }
+    public Map<String, String> getKeyValuePair(String sheetName, String key) throws IOException {
+        fi= new FileInputStream(path);
+        workbook = new XSSFWorkbook(fi);
+        sheet = workbook.getSheet(sheetName);
+
+        Map<String, String> keyValuePair = new HashMap<>();
+
+        for (Row row : sheet) {
+            Cell keyCell = row.getCell(0);
+            if (keyCell != null && keyCell.getStringCellValue().equalsIgnoreCase(key)) {
+                Cell valueCell = row.getCell(1);
+                Cell locatorTypeCell = row.getCell(2);
+                if (valueCell != null && locatorTypeCell != null) {
+                    keyValuePair.put("value", valueCell.getStringCellValue());
+                    keyValuePair.put("locatorType", locatorTypeCell.getStringCellValue());
+                    break;
                 }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        return data;
+        workbook.close();
+        fi.close();
+        return keyValuePair;
     }
 
-    private static Object getCellValue(Cell cell) {
-        switch (cell.getCellType()) {
-            case STRING:
-                return cell.getStringCellValue();
-            case NUMERIC:
-                if (DateUtil.isCellDateFormatted(cell)) {
-                    return cell.getDateCellValue();
-                } else {
-                    return cell.getNumericCellValue();
-                }
-            case BOOLEAN:
-                return cell.getBooleanCellValue();
-            case FORMULA:
-                switch (cell.getCachedFormulaResultType()) {
-                    case STRING:
-                        return cell.getStringCellValue();
-                    case NUMERIC:
-                        if (DateUtil.isCellDateFormatted(cell)) {
-                            return cell.getDateCellValue();
-                        } else {
-                            return cell.getNumericCellValue();
-                        }
-                    case BOOLEAN:
-                        return cell.getBooleanCellValue();
-                    default:
-                        return "";
-                }
-            default:
-                return "";
-        }
-    }
+
 }

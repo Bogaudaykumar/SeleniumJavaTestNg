@@ -1,3 +1,4 @@
+/*
 package DriverFactory;
 
 import Reports.ExtentReportManager;
@@ -69,5 +70,119 @@ public class BaseTest {
     }
 
 
+
+        public static void email() {
+            String from = USER_NAME;
+            String pass = PASSWORD;
+            String[] to = { RECIPIENT }; // list of recipient email addresses
+            String subject = "Java send mail example";
+            String body = "Welcome to JavaMail!";
+
+            sendFromGMail(from, pass, to, subject, body);
+        }
+
+        private static void sendFromGMail(String from, String pass, String[] to, String subject, String body) {
+            Properties props = System.getProperties();
+            String host = "smtp.gmail.com";
+            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.host", host);
+            props.put("mail.smtp.user", from);
+            props.put("mail.smtp.password", pass);
+            props.put("mail.smtp.port", "587");
+            props.put("mail.smtp.auth", "true");
+
+            Session session = Session.getDefaultInstance(props);
+            MimeMessage message = new MimeMessage(session);
+
+            try {
+                message.setFrom(new InternetAddress(from));
+                InternetAddress[] toAddress = new InternetAddress[to.length];
+
+                // To get the array of addresses
+                for( int i = 0; i < to.length; i++ ) {
+                    toAddress[i] = new InternetAddress(to[i]);
+                }
+
+                for( int i = 0; i < toAddress.length; i++) {
+                    message.addRecipient(Message.RecipientType.TO, toAddress[i]);
+                }
+
+                message.setSubject(subject);
+                message.setText(body);
+                Transport transport = session.getTransport("smtp");
+                transport.connect(host, from, pass);
+                transport.sendMessage(message, message.getAllRecipients());
+                transport.close();
+            }
+            catch (AddressException ae) {
+                ae.printStackTrace();
+            }
+            catch (MessagingException me) {
+                me.printStackTrace();
+            }
+        }
     }
 
+*/
+package DriverFactory;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.annotations.*;
+import java.io.FileInputStream;
+import java.net.URL;
+import java.time.Duration;
+import java.util.Properties;
+import static mail.gmail.sendEmail;
+public class BaseTest {
+    public static Properties properties;
+    public static ThreadLocal<WebDriver> threadDriver = new ThreadLocal<>();
+
+    public static void configReader() throws Exception {
+        properties = new Properties();
+        FileInputStream FI = new FileInputStream("src/main/resources/Config.properties");
+        properties.load(FI);
+    }
+
+    public static void browserSelection(String browser, String url) throws Exception {
+        WebDriver driver;
+        ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.addArguments("--start-maximized");
+        switch (browser.toLowerCase()) {
+            case "chrome":
+                driver = new ChromeDriver(chromeOptions);
+                break;
+            case "edge":
+                driver = new EdgeDriver();
+                break;
+            case "firefox":
+                driver = new EdgeDriver();
+                break;
+            case "docker":
+                driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), chromeOptions);
+                break;
+            default:
+                throw new IllegalArgumentException("Browser not supported: " + browser);
+        }
+        threadDriver.set(driver);
+        driver = threadDriver.get();
+        driver.get(url);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+    }
+
+    public static WebDriver getDriver() {
+        return threadDriver.get();
+    }
+
+    public static void driverDropping() {
+        if (threadDriver.get() != null) {
+            threadDriver.get().quit();
+        }
+        if (threadDriver != null) {
+            threadDriver.remove();
+        }
+    }
+}
